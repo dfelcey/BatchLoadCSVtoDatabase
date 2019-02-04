@@ -1,0 +1,13 @@
+file:
+  base_dir: '/Users/dave/tmp/data'
+  input_dir: 'input'
+  output_dir: 'output'
+  archive_dir: 'archive'
+batch:
+  size: '2'
+mysql:
+  host: '127.0.0.1'
+  port: '3306'
+  username: 'root'
+  password: ''
+  database: 'test'

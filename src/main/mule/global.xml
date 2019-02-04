@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="631e847d-accc-408d-bfa0-44da101496fb" file="config.yaml" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="759bb7e3-cb91-469e-9165-f2870bc68f5a" >
+		<file:connection workingDir="${file.base_dir}" />
+	</file:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="b546fe6c-7614-45f7-89b8-546c339c01ba" >
+		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.username}" password="${mysql.password}" database="${mysql.database}" />
+	</db:config>
+</mule>
