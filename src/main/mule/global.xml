@@ -8,8 +8,8 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd">
 	<configuration-properties doc:name="Configuration properties" doc:id="631e847d-accc-408d-bfa0-44da101496fb" file="config.yaml" />
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="b546fe6c-7614-45f7-89b8-546c339c01ba" >
-		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.username}" password="${mysql.password}" database="${mysql.database}" />
+	<db:config name="MSSQLServer_Database_Config" doc:name="Database Config" doc:id="b546fe6c-7614-45f7-89b8-546c339c01ba" >
+		<db:mssql-connection host="${sqlserver.host}" port="${sqlserver.port}" user="${sqlserver.username}" password="${sqlserver.password}" databaseName="${sqlserver.database}"/>
 	</db:config>
 	<os:object-store name="Object_store" doc:name="Object store" doc:id="6493bcd6-aee1-496f-bd8b-5d414f98010e" config-ref="ObjectStore_Config"/>
 	<os:config name="ObjectStore_Config" doc:name="ObjectStore Config" doc:id="73c62a10-40a2-4917-9384-0637ede0994c" >
@@ -26,4 +26,7 @@ http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sft
 			</reconnection>
 		</sftp:connection>
 	</sftp:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="bc384a21-cc62-4535-b27b-a011c1bac820" >
+		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.username}" password="${mysql.password}" database="${mysql.database}" />
+	</db:config>
 </mule>

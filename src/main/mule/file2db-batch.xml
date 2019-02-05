@@ -60,8 +60,8 @@ payload map {
 }]]></ee:set-payload>
 							</ee:message>
 						</ee:transform>
-						<db:bulk-insert doc:name="Bulk insert" doc:id="9a067649-f11b-4983-ba14-06b6f69c0584" config-ref="Database_Config">
-			<db:sql>INSERT INTO `${mysql.database}`.`stock` (`site`,`sku`,`quantity`)
+						<db:bulk-insert doc:name="Bulk insert" doc:id="9a067649-f11b-4983-ba14-06b6f69c0584" config-ref="MSSQLServer_Database_Config">
+			<db:sql>INSERT INTO ${sqlserver.schema}.stock (site, sku, quantity)
 VALUES (:site, :sku, :quantity);</db:sql>
 		</db:bulk-insert>
 					</batch:aggregator>

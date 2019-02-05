@@ -1,14 +1,22 @@
 batch:
-  size: '2'
+  size: ![lnloaT5nATs=]
 mysql:
-  host: '127.0.0.1'
-  port: '3306'
-  username: 'root'
-  password: ''
-  database: 'davefelcey'
+  host: ![0RLg2rPRFQ1LbmiAT/W3gg==]
+  port: ![/bpf4BH4c2w=]
+  username: ![GA9GWSpN5Wg=]
+  password: ![rSsA/5VJwZE=]
+  database: ![vxmHpnJUwS9A6NAqc50arg==]
+  schema: ![vxmHpnJUwS9A6NAqc50arg==]
+sqlserver:
+  host: ![8dwro07tKiChAJFUfzRlU+FQSvH3KBCFs2htj3/HYaf/5J69/NUnMA==]
+  port: ![ZCxN1BVZo8o=]
+  username: ![JBGY1sPaG78=]
+  password: ![Xbcy2NNgVp+aG6TBGrl3Sw==]
+  database: ![5HQ0ezQ/DlU=]
+  schema: ![b/GatwI3UeM=]
 sftp:
-  host: 'sftp.example.com'
-  port: '22'
-  username: 'demo'
-  password: 'xxxx'
-  dir: '/home/demo/input'
+  host: ![Zw5nfpfPht7y2+WaOpMSSAVOZJDepUB3lF52HdIAURxlKZK9r37i6w==]
+  port: ![XxypdqksgqY=]
+  username: ![7oj59ndsCxY=]
+  password: ![tiz5kdqKLVNRktZU5N2P9w==]
+  dir: ![LSlBZRSwkU968Luk2fTYTmOknQjxmGf/k5KzApVPTdc=]
