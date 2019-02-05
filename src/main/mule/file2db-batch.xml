@@ -1,30 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking"
-	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd">
 	<flow name="BatchProcessFlow" doc:id="a6d2c014-3e50-4e73-bcd2-a1e6e9b196ac" initialState="started" tracking:enable-default-events="true">
-		<file:listener doc:name="On New or Updated File" doc:id="2e7257ac-d8dc-43f4-9cba-2b3d5f427a22" config-ref="File_Config" directory="${file.input_dir}" outputMimeType="application/csv" watermarkMode="MODIFIED_TIMESTAMP" moveToDirectory="${file.archive_dir}">
+		<sftp:listener doc:name="On New or Updated File" doc:id="64b4980d-7bf9-4226-88a0-a917bdc37ece" config-ref="SFTP_Config" directory="${sftp.dir}" timeBetweenSizeCheckUnit="MINUTES">
 			<scheduling-strategy>
-				<fixed-frequency />
+				<fixed-frequency frequency="30" timeUnit="SECONDS"/>
 			</scheduling-strategy>
-		</file:listener>
-		<ee:transform doc:name="Transform Message" doc:id="dedc70ca-0573-4c56-a464-4e91a3ea1e63" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
+		</sftp:listener>
+		<set-variable value="#[attributes.timestamp]" doc:name="Set Last modified Time" doc:id="02b0658d-818e-433f-8cab-359ecefba544" variableName="lastModifiedTime" />
+		<os:retrieve doc:name="Retrieve last file timestamp" doc:id="7d192677-2542-442d-b208-f62eaed9ffad" key="lastModified" objectStore="Object_store" target="previousModifiedTime" targetValue="#[payload as DateTime]">
+			<os:default-value><![CDATA[#[0 as DateTime as String {format:"yyyy-MM-dd'T'HH:mm:ss"}]]]></os:default-value>
+		</os:retrieve>
+		<choice doc:name="Choice" doc:id="5c750184-f080-48c0-aa3c-d8de88cef9fd" >
+			<when expression="#[vars.previousModifiedTime == null or vars.lastModifiedTime &gt; vars.previousModifiedTime]">
+				<ee:transform doc:name="CSV to Java" doc:id="dedc70ca-0573-4c56-a464-4e91a3ea1e63">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/java
 ---
 payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="No Data" doc:id="6709985a-d72c-4b73-b971-76e429a5e7a6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[]]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
 		<batch:job jobName="File2DBBatch" doc:id="f14c8677-724f-4897-9745-66ab4cf48f29" blockSize="${batch.size}">
 			<batch:process-records >
-				<batch:step name="Batch_Step" doc:id="a66c5451-b5a3-42fc-a55c-720571661e86" >
+				<batch:step name="Batch_Step" doc:id="a66c5451-b5a3-42fc-a55c-720571661e86">
 					<logger level="INFO" doc:name="Log Row" doc:id="1c071d03-66aa-4f55-9622-a4b2f5395a97" message="#[payload]"/>
 					<batch:aggregator doc:name="Batch Aggregator" doc:id="bbd50be4-a3af-4cc6-88bd-636a45bef893" size="${batch.size}" streaming="false">
 						<logger level="INFO" doc:name="Log Batch" doc:id="4e81dc54-177b-41e1-bbce-7382b8315f05" message="#[payload]"/>
@@ -41,13 +61,16 @@ payload map {
 							</ee:message>
 						</ee:transform>
 						<db:bulk-insert doc:name="Bulk insert" doc:id="9a067649-f11b-4983-ba14-06b6f69c0584" config-ref="Database_Config">
-			<db:sql>INSERT INTO `davefelcey`.`stock` (`site`,`sku`,`quantity`)
+			<db:sql>INSERT INTO `${mysql.database}`.`stock` (`site`,`sku`,`quantity`)
 VALUES (:site, :sku, :quantity);</db:sql>
 		</db:bulk-insert>
 					</batch:aggregator>
 				</batch:step>
 			</batch:process-records>
 			<batch:on-complete >
+				<os:store doc:name="Save last file timestamp" doc:id="a530dc0c-df6e-4675-8777-35af743ec28c" key="lastModified" objectStore="Object_store">
+					<os:value ><![CDATA[#[vars.lastModifiedTime]]]></os:value>
+				</os:store>
 				<logger level="INFO" doc:name="Log Results" doc:id="daa2d16f-b8f0-49b9-9267-b8baf967fd5a" message="#[payload]"/>
 			</batch:on-complete>
 		</batch:job>
