@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" xmlns:os="http://www.mulesoft.org/schema/mule/os"
-	xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties" xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
-http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd">
-	<configuration-properties doc:name="Configuration properties" doc:id="631e847d-accc-408d-bfa0-44da101496fb" file="config.yaml" />
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="db38bef8-7e55-4ae9-811a-9bae45e0aeec" file="config.yaml" key="${config.key}" >
+		<secure-properties:encrypt algorithm="Blowfish" mode="CBC" />
+	</secure-properties:config>
 	<db:config name="MSSQLServer_Database_Config" doc:name="Database Config" doc:id="b546fe6c-7614-45f7-89b8-546c339c01ba" >
-		<db:mssql-connection host="${sqlserver.host}" port="${sqlserver.port}" user="${sqlserver.username}" password="${sqlserver.password}" databaseName="${sqlserver.database}"/>
+		<db:mssql-connection host="${secure::sqlserver.host}" port="${secure::sqlserver.port}" user="${secure::sqlserver.username}" password="${secure::sqlserver.password}" databaseName="${secure::sqlserver.database}"/>
 	</db:config>
 	<os:object-store name="Object_store" doc:name="Object store" doc:id="6493bcd6-aee1-496f-bd8b-5d414f98010e" config-ref="ObjectStore_Config"/>
 	<os:config name="ObjectStore_Config" doc:name="ObjectStore Config" doc:id="73c62a10-40a2-4917-9384-0637ede0994c" >
@@ -20,13 +23,13 @@ http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sft
 		</os:connection>
 	</os:config>
 	<sftp:config name="SFTP_Config" doc:name="SFTP Config" doc:id="02b0658d-818e-433f-8cab-359ecefba544">
-		<sftp:connection host="${sftp.host}" port="${sftp.port}" username="${sftp.username}" password="${sftp.password}" >
+		<sftp:connection host="${secure::sftp.host}" port="${secure::sftp.port}" username="${secure::sftp.username}" password="${secure::sftp.password}" >
 			<reconnection >
 				<reconnect />
 			</reconnection>
 		</sftp:connection>
 	</sftp:config>
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="bc384a21-cc62-4535-b27b-a011c1bac820" >
-		<db:my-sql-connection host="${mysql.host}" port="${mysql.port}" user="${mysql.username}" password="${mysql.password}" database="${mysql.database}" />
+	<db:config name="MySQL_Database_Config" doc:name="Database Config" doc:id="bc384a21-cc62-4535-b27b-a011c1bac820" >
+		<db:my-sql-connection host="${secure::mysql.host}" port="${secure::mysql.port}" user="${secure::mysql.username}" password="${secure::mysql.password}" database="${secure::mysql.database}" />
 	</db:config>
 </mule>

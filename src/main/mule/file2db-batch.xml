@@ -11,7 +11,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd">
 	<flow name="BatchProcessFlow" doc:id="a6d2c014-3e50-4e73-bcd2-a1e6e9b196ac" initialState="started" tracking:enable-default-events="true">
-		<sftp:listener doc:name="On New or Updated File" doc:id="64b4980d-7bf9-4226-88a0-a917bdc37ece" config-ref="SFTP_Config" directory="${sftp.dir}" timeBetweenSizeCheckUnit="MINUTES">
+		<sftp:listener doc:name="On New or Updated File" doc:id="64b4980d-7bf9-4226-88a0-a917bdc37ece" config-ref="SFTP_Config" directory="${secure::sftp.dir}" timeBetweenSizeCheckUnit="MINUTES">
 			<scheduling-strategy>
 				<fixed-frequency frequency="30" timeUnit="SECONDS"/>
 			</scheduling-strategy>
@@ -42,11 +42,11 @@ output application/java
 				</ee:transform>
 			</otherwise>
 		</choice>
-		<batch:job jobName="File2DBBatch" doc:id="f14c8677-724f-4897-9745-66ab4cf48f29" blockSize="${batch.size}">
+		<batch:job jobName="File2DBBatch" doc:id="f14c8677-724f-4897-9745-66ab4cf48f29" blockSize="${secure::batch.size}">
 			<batch:process-records >
 				<batch:step name="Batch_Step" doc:id="a66c5451-b5a3-42fc-a55c-720571661e86">
 					<logger level="INFO" doc:name="Log Row" doc:id="1c071d03-66aa-4f55-9622-a4b2f5395a97" message="#[payload]"/>
-					<batch:aggregator doc:name="Batch Aggregator" doc:id="bbd50be4-a3af-4cc6-88bd-636a45bef893" size="${batch.size}" streaming="false">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="bbd50be4-a3af-4cc6-88bd-636a45bef893" size="${secure::batch.size}">
 						<logger level="INFO" doc:name="Log Batch" doc:id="4e81dc54-177b-41e1-bbce-7382b8315f05" message="#[payload]"/>
 						<ee:transform doc:name="Transform Message" doc:id="d866e0d2-5af5-44e2-b7b2-bf7fd5e6d661">
 							<ee:message>
@@ -61,7 +61,7 @@ payload map {
 							</ee:message>
 						</ee:transform>
 						<db:bulk-insert doc:name="Bulk insert" doc:id="9a067649-f11b-4983-ba14-06b6f69c0584" config-ref="MSSQLServer_Database_Config">
-			<db:sql>INSERT INTO ${sqlserver.schema}.stock (site, sku, quantity)
+			<db:sql>INSERT INTO ${secure::sqlserver.schema}.stock (site, sku, quantity)
 VALUES (:site, :sku, :quantity);</db:sql>
 		</db:bulk-insert>
 					</batch:aggregator>
